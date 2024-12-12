@@ -11,9 +11,7 @@ from asyncpg.exceptions import (
     CannotConnectNowError,
     ConnectionDoesNotExistError,
 )
-
-
-from src.config import config
+import config
 
 
 metadata = sqlalchemy.MetaData()
@@ -151,7 +149,7 @@ db_uri = (
     f"@{config.DB_HOST}/{config.DB_NAME}"
 )
 
-# Async database engine
+
 engine = create_async_engine(
     db_uri,
     echo=True,
@@ -159,13 +157,13 @@ engine = create_async_engine(
     pool_pre_ping=True,
 )
 
-# Database instance
+
 database = databases.Database(
     db_uri,
     force_rollback=True,
 )
 
-# Initialize database
+
 async def init_db(retries: int = 5, delay: int = 5) -> None:
     """Function initializing the DB.
 

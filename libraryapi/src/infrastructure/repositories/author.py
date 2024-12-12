@@ -1,4 +1,3 @@
-"""A repository for author entity."""
 
 from typing import Any
 from pydantic import UUID4
@@ -8,7 +7,6 @@ from src.db import author_table, database
 
 
 class AuthorRepository(IAuthorRepository):
-    """A class implementing the database author repository."""
 
     async def add_author(self, data: AuthorIn) -> Any | None:
         query = author_table.insert().values(**data.model_dump())

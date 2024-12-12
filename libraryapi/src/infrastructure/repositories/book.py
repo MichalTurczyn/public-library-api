@@ -1,5 +1,3 @@
-"""A repository for book entity."""
-
 from typing import Any
 from pydantic import UUID4
 from src.core.domain.book import Book, BookIn
@@ -8,7 +6,6 @@ from src.db import book_table, database
 
 
 class BookRepository(IBookRepository):
-    """A class implementing the database book repository."""
 
     async def get_by_uuid(self, book_id: UUID4) -> Any | None:
         query = book_table.select().where(book_table.c.id == book_id)
