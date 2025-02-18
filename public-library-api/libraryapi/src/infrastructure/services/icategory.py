@@ -2,7 +2,6 @@
 
 from abc import ABC, abstractmethod
 from typing import Iterable
-from pydantic import UUID4
 
 from src.core.domain.category import Category, CategoryIn
 from src.infrastructure.dto.categorydto import CategoryDTO
@@ -12,7 +11,7 @@ class ICategoryService(ABC):
     """An abstract class representing the protocol for category services."""
 
     @abstractmethod
-    async def add_category(self, category_data: CategoryIn) -> Category | None:
+    async def add_category(self, category_data: CategoryIn) -> CategoryDTO | None:
         """Adds a new category to the repository.
 
         Args:
@@ -23,11 +22,11 @@ class ICategoryService(ABC):
         """
 
     @abstractmethod
-    async def get_category_by_id(self, category_id: UUID4) -> CategoryDTO | None:
-        """Fetches a category using its UUID.
+    async def get_category_by_id(self, category_id: int) -> CategoryDTO | None:
+        """Fetches a category using its id.
 
         Args:
-            category_id (UUID4): The UUID of the category.
+            category_id (int): The id of the category.
 
         Returns:
             CategoryDTO | None: The category details if found.
@@ -43,12 +42,12 @@ class ICategoryService(ABC):
 
     @abstractmethod
     async def update_category(
-        self, category_id: UUID4, category_data: CategoryIn
-    ) -> Category | None:
+        self, category_id: int, category_data: CategoryIn
+    ) -> CategoryDTO | None:
         """Updates an existing category.
 
         Args:
-            category_id (UUID4): The UUID of the category to update.
+            category_id (int): The id of the category to update.
             category_data (CategoryIn): The updated category details.
 
         Returns:
@@ -56,11 +55,11 @@ class ICategoryService(ABC):
         """
 
     @abstractmethod
-    async def delete_category(self, category_id: UUID4) -> bool:
-        """Deletes a category by its UUID.
+    async def delete_category(self, category_id: int) -> bool:
+        """Deletes a category by its id.
 
         Args:
-            category_id (UUID4): The UUID of the category to delete.
+            category_id (int): The id of the category to delete.
 
         Returns:
             bool: True if the deletion was successful, otherwise False.

@@ -2,7 +2,6 @@
 
 from abc import ABC, abstractmethod
 from typing import Any
-from pydantic import UUID4
 
 from src.core.domain.category import Category, CategoryIn
 
@@ -22,11 +21,11 @@ class ICategoryRepository(ABC):
         """
 
     @abstractmethod
-    async def get_by_uuid(self, uuid: UUID4) -> Category | None:
-        """Fetches a category by its UUID.
+    async def get_category_by_id(self, category_id: int) -> Category | None:
+        """Fetches a category by its id.
 
         Args:
-            uuid (UUID4): UUID of the category.
+            id (int): id of the category.
 
         Returns:
             Category | None: The category object if found.
@@ -38,4 +37,27 @@ class ICategoryRepository(ABC):
 
         Returns:
             list[Category]: A list of all categories.
+        """
+
+    @abstractmethod
+    async def update_category(self, category_id: int, updated_data: CategoryIn) -> Category | None:
+        """Updates a category by its ID.
+
+        Args:
+            category_id (int): ID of the category to update.
+            updated_data (CategoryIn): The updated category data.
+
+        Returns:
+            Category | None: The updated category object if successful, otherwise None.
+        """
+
+    @abstractmethod
+    async def delete_category(self, category_id: int) -> bool:
+        """Deletes a category by its ID.
+
+        Args:
+            category_id (int): ID of the category to delete.
+
+        Returns:
+            bool: True if the category was successfully deleted, otherwise False.
         """

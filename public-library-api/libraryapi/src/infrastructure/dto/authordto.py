@@ -1,10 +1,10 @@
-from pydantic import UUID4, BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict
 
 
 class AuthorDTO(BaseModel):
     """A DTO model for author."""
 
-    id: UUID4
+    id: int
     first_name: str
     last_name: str
 

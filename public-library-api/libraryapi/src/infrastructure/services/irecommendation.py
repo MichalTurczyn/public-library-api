@@ -2,79 +2,35 @@
 
 from abc import ABC, abstractmethod
 from typing import Iterable
-from pydantic import UUID4
 
-from src.core.domain.recommendation import Recommendation, RecommendationIn
-from src.infrastructure.dto.recommendationdto import RecommendationDTO
+from src.core.domain.recommendation import Recommendation
 
 
 class IRecommendationService(ABC):
     """An abstract class representing the protocol for recommendation services."""
 
     @abstractmethod
-    async def add_recommendation(self, data: RecommendationIn) -> Recommendation | None:
-        """Adds a new recommendation to the repository.
+    async def recommend_by_category(self, user_id: int) -> Recommendation:
+        """
+        Generates book recommendations based on the borrowing history by category.
 
         Args:
-            data (RecommendationIn): The details of the recommendation.
+            user_id (int): The ID of the user.
 
         Returns:
-            Recommendation | None: The newly created recommendation.
+            Recommendation: Recommendations generated for the user based on categories.
         """
+        pass
 
     @abstractmethod
-    async def get_recommendation_by_id(self, recommendation_id: UUID4) -> RecommendationDTO | None:
-        """Fetches a recommendation by its UUID.
+    async def recommend_by_author(self, user_id: int) -> Recommendation:
+        """
+        Generates book recommendations based on the borrowing history by author.
 
         Args:
-            recommendation_id (UUID4): The UUID of the recommendation.
+            user_id (int): The ID of the user.
 
         Returns:
-            RecommendationDTO | None: The recommendation details if found.
+            Recommendation: Recommendations generated for the user based on authors.
         """
-
-    @abstractmethod
-    async def list_recommendations(self) -> Iterable[RecommendationDTO]:
-        """Lists all recommendations.
-
-        Returns:
-            Iterable[RecommendationDTO]: A collection of all recommendations.
-        """
-
-    @abstractmethod
-    async def update_recommendation(
-        self,
-        recommendation_id: UUID4,
-        data: RecommendationIn,
-    ) -> Recommendation | None:
-        """Updates an existing recommendation.
-
-        Args:
-            recommendation_id (UUID4): The UUID of the recommendation to update.
-            data (RecommendationIn): The updated recommendation details.
-
-        Returns:
-            Recommendation | None: The updated recommendation.
-        """
-
-    @abstractmethod
-    async def delete_recommendation(self, recommendation_id: UUID4) -> bool:
-        """Deletes a recommendation by its UUID.
-
-        Args:
-            recommendation_id (UUID4): The UUID of the recommendation to delete.
-
-        Returns:
-            bool: True if deletion was successful, otherwise False.
-        """
-
-    @abstractmethod
-    async def get_recommendations_for_user(self, user_id: UUID4) -> Iterable[RecommendationDTO]:
-        """Fetches recommendations for a specific user.
-
-        Args:
-            user_id (UUID4): The UUID of the user.
-
-        Returns:
-            Iterable[RecommendationDTO]: A collection of recommendations for the user.
-        """
+        pass

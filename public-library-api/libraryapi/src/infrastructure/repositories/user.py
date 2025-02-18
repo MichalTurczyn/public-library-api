@@ -2,9 +2,6 @@
 
 
 from typing import Any
-
-from pydantic import UUID4
-
 from src.infrastructure.utils.password import hash_password
 from src.core.domain.user import UserIn, User
 from src.core.repositories.iuser import IUserRepository
@@ -24,21 +21,40 @@ class UserRepository(IUserRepository):
             Any | None: The new user object.
         """
 
-        if await self.get_by_email(user.email):
+        if await self.get_user_by_email(user.email):
             return None
 
         user.password = hash_password(user.password)
 
         query = user_table.insert().values(**user.model_dump())
-        new_user_uuid = await database.execute(query)
+        new_user_id = await database.execute(query)
 
-        return await self.get_by_uuid(new_user_uuid)
+        return await self.get_user_by_id(new_user_id)
+    
 
-    async def get_by_uuid(self, uuid: UUID4) -> Any | None:
-        """A method getting user by UUID.
+        token_details = TokenDTO(
+            token_type="Bearer",
+            user_token="mock_token_12345",
+            expires=datetime.utcnow() + timedelta(hours=1)
+        )
+        return token_details
+    
+    async def list_users(self) -> list[User]:
+        """
+        Lists all users.
+
+        Returns:
+            list[User]: A list of all user objects.
+        """
+        query = user_table.select()
+        users = await database.fetch_all(query)
+        return [User(**dict(user)) for user in users]
+
+    async def get_user_by_id(self, id: int) -> Any | None:
+        """A method getting user by id.
 
         Args:
-            uuid (UUID5): UUID of the user.
+            id (id5): id of the user.
 
         Returns:
             Any | None: The user object if exists.
@@ -46,12 +62,12 @@ class UserRepository(IUserRepository):
 
         query = user_table \
             .select() \
-            .where(user_table.c.id == uuid)
+            .where(user_table.c.id == id)
         user = await database.fetch_one(query)
 
         return user
 
-    async def get_by_email(self, email: str) -> Any | None:
+    async def get_user_by_email(self, email: str) -> Any | None:
         """A method getting user by email.
 
         Args:
@@ -68,22 +84,35 @@ class UserRepository(IUserRepository):
 
         return user
     
-    async def update_user(self, uuid: UUID4, user_data: UserIn) -> User | None:
-        """A method to update user details."""
+    async def update_user(self, id: int, user_data: UserIn) -> User | None:
+        """
+        Updates a user's data.
 
-        # Query to update user data in the database
-        query = user_table.update().where(user_table.c.id == uuid).values(**user_data.dict())
+        Args:
+            id (int): The ID of the user to update.
+            user_data (UserIn): The updated user data.
+
+        Returns:
+            User | None: The updated user object if successful, otherwise None.
+        """
+        query = user_table.update().where(user_table.c.id == id).values(**user_data.dict())
         await database.execute(query)
 
-        # Fetch the updated user by UUID
-        return await self.get_by_uuid(uuid)
+        return await self.get_user_by_id(id)
 
-    async def delete_user(self, uuid: UUID4) -> bool:
-        """A method to delete a user by UUID."""
+    async def delete_user(self, id: int) -> bool:
+        """
+        Deletes a user by their ID.
 
-        # Query to delete user from the database
-        query = user_table.delete().where(user_table.c.id == uuid)
-        result = await database.execute(query)
+        Args:
+            id (int): The ID of the user to delete.
 
-        # Return True if a row was deleted, else False
-        return result > 0
+        Returns:
+            bool: True if the deletion was successful, otherwise False.
+        """
+        if self.get_user_by_id(id):
+            query = user_table.delete().where(user_table.c.id == id)
+            await database.execute(query)
+            return True
+
+        return False

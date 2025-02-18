@@ -1,7 +1,5 @@
 """A module containing user service."""
-
-from pydantic import UUID4
-
+from typing import Iterable
 from src.core.domain.user import UserIn
 from src.core.repositories.iuser import IUserRepository
 from src.infrastructure.dto.userdto import UserDTO
@@ -41,29 +39,37 @@ class UserService(IUserService):
             TokenDTO | None: The token details.
         """
 
-        if user_data := await self._repository.get_by_email(user.email):
+        if user_data := await self._repository.get_user_by_email(user.email):
             if verify_password(user.password, user_data.password):
                 token_details = generate_user_token(user_data.id)
-                # trunk-ignore(bandit/B106)
                 return TokenDTO(token_type="Bearer", **token_details)
 
             return None
 
         return None
+    
+    async def list_users(self) -> Iterable[UserDTO]:
+        """Lists all users available in the repository.
 
-    async def get_by_uuid(self, uuid: UUID4) -> UserDTO | None:
-        """A method getting user by UUID.
+        Returns:
+            Iterable[UserDTO]: A collection of all users.
+        """
+        users = await self._repository.list_users()
+        return [UserDTO(**user.dict()) for user in users]
+
+    async def get_user_by_id(self, id: int) -> UserDTO | None:
+        """A method getting user by id.
 
         Args:
-            uuid (UUID5): The UUID of the user.
+            id (id5): The id of the user.
 
         Returns:
             UserDTO | None: The user data, if found.
         """
 
-        return await self._repository.get_by_uuid(uuid)
+        return await self._repository.get_user_by_id(id)
 
-    async def get_by_email(self, email: str) -> UserDTO | None:
+    async def get_user_by_email(self, email: str) -> UserDTO | None:
         """A method getting user by email.
 
         Args:
@@ -73,15 +79,15 @@ class UserService(IUserService):
             UserDTO | None: The user data, if found.
         """
 
-        return await self.get_by_email(email)
+        return await self._repository.get_user_by_email(email)
     
-    async def update_user(self, user_id: UUID4, user_data: UserIn) -> UserDTO | None:
+    async def update_user(self, user_id: int, user_data: UserIn) -> UserDTO | None:
         """Update user data."""
         updated_user = await self._repository.update_user(user_id, user_data)
         if updated_user:
             return UserDTO(**updated_user.dict())
         return None
 
-    async def delete_user(self, user_id: UUID4) -> bool:
+    async def delete_user(self, user_id: int) -> bool:
         """Delete user."""
         return await self._repository.delete_user(user_id)

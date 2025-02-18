@@ -1,10 +1,10 @@
-from pydantic import UUID4, BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict
 
 
 class CategoryDTO(BaseModel):
     """A DTO model for category."""
 
-    id: UUID4
+    id: int
     name: str
     description: str | None = None
 

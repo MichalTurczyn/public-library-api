@@ -9,12 +9,25 @@ class IRecommendationRepository(ABC):
     """An abstract repository class for recommendation."""
 
     @abstractmethod
-    async def generate_recommendations(self, user_id: str) -> list[Recommendation]:
-        """Generates recommendations for a user.
+    async def recommend_by_category(self, user_id: int) -> Recommendation:
+        """
+        Generates book recommendations based on the borrowing history by category.
 
         Args:
-            user_id (str): The user's ID.
+            user_id (int): The ID of the user.
 
         Returns:
-            list[Recommendation]: A list of recommendations.
+            Recommendation: Recommendations generated for the user based on categories.
+        """
+
+    @abstractmethod
+    async def recommend_by_author(self, user_id: int) -> Recommendation:
+        """
+        Generates book recommendations based on the borrowing history by author.
+
+        Args:
+            user_id (int): The ID of the user.
+
+        Returns:
+            Recommendation: Recommendations generated for the user based on authors.
         """

@@ -1,28 +1,30 @@
-from pydantic import UUID4
 from dependency_injector.wiring import inject, Provide
 from fastapi import APIRouter, Depends, HTTPException, status
 from src.container import Container
+from typing import List
+
 from src.core.domain.book import Book, BookIn
 from src.infrastructure.services.ibook import IBookService
+from src.infrastructure.dto.bookdto import BookDTO
 
-router = APIRouter(prefix="/books", tags=["books"])
+router = APIRouter(prefix="/Book", tags=["Book"])
 
 
-@router.post("/", response_model=Book, status_code=status.HTTP_201_CREATED)
+@router.post("/", response_model=BookDTO, status_code=201)
 @inject
 async def add_book(
     book: BookIn,
     service: IBookService = Depends(Provide[Container.book_service]),
 ) -> Book:
     """
-    Endpoint do dodawania nowej książki.
+    Endpoint for adding a new book.
 
     Args:
-        book (BookIn): Dane książki do dodania.
-        service (IBookService): Wstrzyknięta zależność serwisu książek.
+        book (BookIn): The book data to add.
+        service (IBookService): The injected book service dependency.
 
     Returns:
-        Book: Nowo dodana książka.
+        Book: The newly added book.
     """
     new_book = await service.add_book(book)
     if new_book:
@@ -30,68 +32,131 @@ async def add_book(
     raise HTTPException(status_code=400, detail="Unable to create book")
 
 
-@router.get("/", response_model=list[Book], status_code=status.HTTP_200_OK)
+@router.get("/", response_model=List[BookDTO], status_code=200)
 @inject
 async def list_books(
     service: IBookService = Depends(Provide[Container.book_service]),
-) -> list[Book]:
+) -> List[BookDTO]:
     """
-    Endpoint do pobierania listy wszystkich książek.
+    Endpoint to get list of all books.
 
     Args:
-        service (IBookService): Wstrzyknięta zależność serwisu książek.
+        service (IBookService): Injected dependency of book service.
 
     Returns:
-        list[Book]: Lista książek.
+        list[Book]: List of books.
     """
     return await service.list_books()
 
 
-@router.get("/{book_id}", response_model=Book, status_code=status.HTTP_200_OK)
+@router.get("/{book_id}", response_model=BookDTO, status_code=200)
 @inject
-async def get_book_by_uuid(
-    book_id: UUID4,
+async def get_book_by_id(
+    book_id: int,
     service: IBookService = Depends(Provide[Container.book_service]),
 ) -> Book:
     """
-    Endpoint do pobierania książki na podstawie identyfikatora UUID.
+    Endpoint to fetch a book based on its id.
 
     Args:
-        book_id (UUID): Identyfikator książki.
-        service (IBookService): Wstrzyknięta zależność serwisu książek.
+        book_id (int): The book's id.
+        service (IBookService): The injected book service dependency.
 
     Raises:
-        HTTPException: 404 jeśli książka nie istnieje.
+        HTTPException: 404 if the book doesn't exist.
 
     Returns:
-        Book: Szczegóły książki.
+        Book: The book details.
     """
-    book = await service.get_book_by_uuid(book_id)
+    book = await service.get_book_by_id(book_id)
     if book:
         return book
     raise HTTPException(status_code=404, detail="Book not found")
 
+@router.get("/search/title/{title}", response_model=list[Book], status_code=200)
+@inject
+async def search_book_by_title(
+    title: str,
+    service: IBookService = Depends(Provide[Container.book_service]),
+) -> list[Book]:
+    """
+    Endpoint for searching for books by title.
 
-@router.put("/{book_id}", response_model=Book, status_code=status.HTTP_200_OK)
+    Args:
+        title (str): Title of the book.
+        service (IBookService): Injected dependency of the book service.
+
+    Returns:
+        list[Book]: List of books that match the title.
+    """
+    books = await service.search_book_by_title(title)
+    if books:
+        return books
+    raise HTTPException(status_code=404, detail="No books found with this title")
+
+@router.get("/search/author/{author_id}", response_model=list[Book], status_code=200)
+@inject
+async def search_book_by_author(
+    author_id: int,
+    service: IBookService = Depends(Provide[Container.book_service]),
+) -> list[Book]:
+    """
+    Endpoint for searching books by author.
+
+    Args:
+        author_id (int): The author id of the book.
+        service (IBookService): Injected dependency of the book service.
+
+    Returns:
+        list[Book]: List of books written by the author.
+    """
+    books = await service.search_book_by_author(author_id)
+    if books:
+        return books
+    raise HTTPException(status_code=404, detail="No books found for this author")
+
+@router.get("/search/category/{category_id}", response_model=list[Book], status_code=200)
+@inject
+async def search_book_by_category(
+    category_id: int,
+    service: IBookService = Depends(Provide[Container.book_service]),
+) -> list[Book]:
+    """
+    Endpoint for searching books by category.
+
+    Args:
+        category_id (int): the book's category id.
+        service (IBookService): Injected book service dependency.
+
+    Returns:
+        list[Book]: List of books belonging to the category.
+
+    """
+    books = await service.search_book_by_category(category_id)
+    if books:
+        return books
+    raise HTTPException(status_code=404, detail="No books found for this category")
+
+@router.put("/{book_id}", response_model=BookDTO, status_code=200)
 @inject
 async def update_book(
-    book_id: UUID4,
+    book_id: int,
     updated_data: BookIn,
     service: IBookService = Depends(Provide[Container.book_service]),
 ) -> Book:
     """
-    Endpoint do aktualizacji danych książki.
+    Endpoint for updating book data.
 
     Args:
-        book_id (UUID): Identyfikator książki.
-        updated_data (BookIn): Zaktualizowane dane książki.
-        service (IBookService): Wstrzyknięta zależność serwisu książek.
+        book_id (int): Book ID.
+        updated_data (BookIn): Updated book data.
+        service (IBookService): Injected book service dependency.
 
     Raises:
-        HTTPException: 404 jeśli książka nie istnieje.
+        HTTPException: 404 if book does not exist.
 
     Returns:
-        Book: Zaktualizowana książka.
+        Book: Updated book.
     """
     updated_book = await service.update_book(book_id, updated_data)
     if updated_book:
@@ -99,86 +164,22 @@ async def update_book(
     raise HTTPException(status_code=404, detail="Book not found")
 
 
-@router.delete("/{book_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{book_id}", status_code=204)
 @inject
 async def delete_book(
-    book_id: UUID4,
+    book_id: int,
     service: IBookService = Depends(Provide[Container.book_service]),
 ) -> None:
     """
-    Endpoint do usuwania książki na podstawie identyfikatora UUID.
+    Endpoint to delete a book based on its id.
 
     Args:
-        book_id (UUID): Identyfikator książki.
-        service (IBookService): Wstrzyknięta zależność serwisu książek.
+        book_id (int): The book's id.
+        service (IBookService): The injected book service dependency.
 
     Raises:
-        HTTPException: 404 jeśli książka nie istnieje.
+        HTTPException: 404 if the book does not exist.
     """
     result = await service.delete_book(book_id)
     if not result:
         raise HTTPException(status_code=404, detail="Book not found")
-
-
-@router.get("/search/title/{title}", response_model=list[Book], status_code=status.HTTP_200_OK)
-@inject
-async def search_book_by_title(
-    title: str,
-    service: IBookService = Depends(Provide[Container.book_service]),
-) -> list[Book]:
-    """
-    Endpoint do wyszukiwania książek po tytule.
-
-    Args:
-        title (str): Tytuł książki.
-        service (IBookService): Wstrzyknięta zależność serwisu książek.
-
-    Returns:
-        list[Book]: Lista książek, które pasują do tytułu.
-    """
-    books = await service.search_book_by_title(title)
-    if books:
-        return books
-    raise HTTPException(status_code=404, detail="No books found with this title")
-
-@router.get("/search/author/{author_id}", response_model=list[Book], status_code=status.HTTP_200_OK)
-@inject
-async def search_book_by_author(
-    author_id: UUID4,
-    service: IBookService = Depends(Provide[Container.book_service]),
-) -> list[Book]:
-    """
-    Endpoint do wyszukiwania książek po autorze.
-
-    Args:
-        author_id (UUID4): UUID autora książki.
-        service (IBookService): Wstrzyknięta zależność serwisu książek.
-
-    Returns:
-        list[Book]: Lista książek napisanych przez autora.
-    """
-    books = await service.search_book_by_author(author_id)
-    if books:
-        return books
-    raise HTTPException(status_code=404, detail="No books found for this author")
-
-@router.get("/search/category/{category_id}", response_model=list[Book], status_code=status.HTTP_200_OK)
-@inject
-async def search_book_by_category(
-    category_id: UUID4,
-    service: IBookService = Depends(Provide[Container.book_service]),
-) -> list[Book]:
-    """
-    Endpoint do wyszukiwania książek po kategorii.
-
-    Args:
-        category_id (UUID4): UUID kategorii książki.
-        service (IBookService): Wstrzyknięta zależność serwisu książek.
-
-    Returns:
-        list[Book]: Lista książek należących do kategorii.
-    """
-    books = await service.search_book_by_category(category_id)
-    if books:
-        return books
-    raise HTTPException(status_code=404, detail="No books found for this category")

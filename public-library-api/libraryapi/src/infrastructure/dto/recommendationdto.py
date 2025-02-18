@@ -1,12 +1,10 @@
-from pydantic import UUID4, BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict
 
 
 class RecommendationDTO(BaseModel):
     """A DTO model for recommendation."""
-
-    id: UUID4
-    user_id: UUID4
-    recommended_books: list[UUID4]
+    user_id: int
+    recommended_books: list[int]
     reason: str
 
     model_config = ConfigDict(

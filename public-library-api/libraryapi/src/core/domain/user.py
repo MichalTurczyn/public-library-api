@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict, UUID4
+from pydantic import BaseModel, ConfigDict
 
 
 class UserIn(BaseModel):
@@ -7,5 +7,5 @@ class UserIn(BaseModel):
 
 
 class User(UserIn):
-    id: UUID4
+    id: int
     model_config = ConfigDict(from_attributes=True, extra="ignore")

@@ -1,46 +1,56 @@
 """Module containing the implementation of recommendation services."""
 
 from typing import Iterable
-from pydantic import UUID4
 
-from src.core.domain.recommendation import Recommendation, RecommendationIn
+from src.core.domain.recommendation import Recommendation
 from src.infrastructure.dto.recommendationdto import RecommendationDTO
 from src.infrastructure.services.irecommendation import IRecommendationService
+from src.core.repositories.irecommendation import IRecommendationRepository
 
 
 class RecommendationService(IRecommendationService):
     """A service class implementing the IRecommendationService protocol."""
 
-    async def add_recommendation(self, data: RecommendationIn) -> Recommendation | None:
-        """Adds a new recommendation to the repository."""
-        # Implementation logic for adding a recommendation
-        pass
+    _repository: IRecommendationRepository
 
-    async def get_recommendation_by_id(self, recommendation_id: UUID4) -> RecommendationDTO | None:
-        """Fetches a recommendation by its UUID."""
-        # Implementation logic for fetching a recommendation by UUID
-        pass
+    def __init__(self, repository: IRecommendationRepository) -> None:
+        """Initializer for the recommendation service.
 
-    async def list_recommendations(self) -> Iterable[RecommendationDTO]:
-        """Lists all recommendations."""
-        # Implementation logic for listing all recommendations
-        pass
+        Args:
+            repository (IRecommendationRepository): The recommendation repository.
+        """
+        self._repository = repository
 
-    async def update_recommendation(
-        self,
-        recommendation_id: UUID4,
-        data: RecommendationIn,
-    ) -> Recommendation | None:
-        """Updates an existing recommendation."""
-        # Implementation logic for updating a recommendation
-        pass
+    async def recommend_by_category(self, user_id: int) -> Recommendation:
+        """
+        Generates book recommendations based on the borrowing history by category.
 
-    async def delete_recommendation(self, recommendation_id: UUID4) -> bool:
-        """Deletes a recommendation by its UUID."""
-        # Implementation logic for deleting a recommendation
-        pass
+        Args:
+            user_id (int): The ID of the user.
 
-    async def get_recommendations_for_user(self, user_id: UUID4) -> Iterable[RecommendationDTO]:
-        """Fetches recommendations for a specific user."""
-        # Implementation logic for fetching recommendations for a user
-        pass
+        Returns:
+            Recommendation: Recommendations generated for the user based on categories.
+        """
+        recommendation = await self._repository.recommend_by_category(user_id)
+        return RecommendationDTO(
+            user_id=recommendation.user_id,
+            recommended_books=recommendation.recommended_books,
+            reason=recommendation.reason,
+        )
+
+    async def recommend_by_author(self, user_id: int) -> Recommendation:
+        """
+        Generates book recommendations based on the borrowing history by author.
+
+        Args:
+            user_id (int): The ID of the user.
+
+        Returns:
+            Recommendation: Recommendations generated for the user based on authors.
+        """
+        recommendation = await self._repository.recommend_by_author(user_id)
+        return RecommendationDTO(
+            user_id=recommendation.user_id,
+            recommended_books=recommendation.recommended_books,
+            reason=recommendation.reason,
+        )

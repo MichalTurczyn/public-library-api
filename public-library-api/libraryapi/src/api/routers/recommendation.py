@@ -9,26 +9,25 @@ from src.infrastructure.services.irecommendation import IRecommendationService
 router = APIRouter(prefix="/recommendations", tags=["recommendations"])
 
 
-@router.get("/{user_id}", response_model=List[Recommendation], status_code=status.HTTP_200_OK)
+@router.get("/by-category/{user_id}", response_model=Recommendation, status_code=200)
 @inject
-async def get_recommendations(
-    user_id: str,
+async def recommend_by_category(
+    user_id: int,
     service: IRecommendationService = Depends(Provide[Container.recommendation_service]),
-) -> List[Recommendation]:
-    """
-    Endpoint generujący rekomendacje dla użytkownika.
+) -> Recommendation:
+    recommendations = await service.recommend_by_category(user_id)
+    if not recommendations.recommended_books:
+        raise HTTPException(status_code=404, detail="No recommendations found for this user.")
+    return recommendations
 
-    Args:
-        user_id (str): ID użytkownika, dla którego generowane są rekomendacje.
-        service (IRecommendationService): Serwis generujący rekomendacje.
 
-    Raises:
-        HTTPException: 404 jeśli rekomendacje nie mogą zostać wygenerowane.
-
-    Returns:
-        List[Recommendation]: Lista rekomendacji.
-    """
-    recommendations = await service.generate_recommendations(user_id)
-    if not recommendations:
+@router.get("/by-author/{user_id}", response_model=Recommendation, status_code=200)
+@inject
+async def recommend_by_author(
+    user_id: int,
+    service: IRecommendationService = Depends(Provide[Container.recommendation_service]),
+) -> Recommendation:
+    recommendations = await service.recommend_by_author(user_id)
+    if not recommendations.recommended_books:
         raise HTTPException(status_code=404, detail="No recommendations found for this user.")
     return recommendations

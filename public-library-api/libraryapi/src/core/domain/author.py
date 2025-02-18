@@ -1,5 +1,4 @@
-from pydantic import UUID4, BaseModel, ConfigDict
-from datetime import date
+from pydantic import BaseModel, ConfigDict
 
 class AuthorIn(BaseModel):
     first_name: str
@@ -7,6 +6,6 @@ class AuthorIn(BaseModel):
 
 
 class Author(AuthorIn):
-    id: UUID4
+    id: int
 
     model_config = ConfigDict(from_attributes=True, extra="ignore")

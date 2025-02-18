@@ -2,7 +2,6 @@
 
 from abc import ABC, abstractmethod
 from typing import Iterable
-from pydantic import UUID4
 
 from src.core.domain.author import Author
 from src.infrastructure.dto.authordto import AuthorDTO
@@ -23,11 +22,11 @@ class IAuthorService(ABC):
         """
 
     @abstractmethod
-    async def get_author_by_id(self, author_id: UUID4) -> AuthorDTO | None:
-        """Fetches an author's details using their UUID.
+    async def get_author_by_id(self, author_id: int) -> AuthorDTO | None:
+        """Fetches an author's details using their id.
 
         Args:
-            author_id (UUID4): The UUID of the author.
+            author_id (int): The id of the author.
 
         Returns:
             AuthorDTO | None: The author details if found.
@@ -42,22 +41,33 @@ class IAuthorService(ABC):
         """
 
     @abstractmethod
-    async def get_books_by_author(self, author_id: UUID4) -> list:
+    async def get_books_by_author(self, author_id: int) -> list:
         """Fetches all books written by the specified author.
 
         Args:
-            author_id (UUID4): The UUID of the author.
+            author_id (int): The id of the author.
 
         Returns:
             list: A list of books written by the author.
         """
 
     @abstractmethod
-    async def delete_author(self, author_id: UUID4) -> bool:
-        """Deletes an author by their UUID.
+    async def update_author(self, author_id: int) -> AuthorDTO:
+        """Deletes an author by their id.
 
         Args:
-            author_id (UUID4): The UUID of the author to delete.
+            author_id (int): The id of the author to delete.
+
+        Returns:
+            bool: True if deletion was successful, otherwise False.
+        """
+
+    @abstractmethod
+    async def delete_author(self, author_id: int) -> bool:
+        """Deletes an author by their id.
+
+        Args:
+            author_id (int): The id of the author to delete.
 
         Returns:
             bool: True if deletion was successful, otherwise False.

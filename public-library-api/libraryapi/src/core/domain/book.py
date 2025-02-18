@@ -1,18 +1,17 @@
-from pydantic import UUID4, BaseModel, ConfigDict
-from datetime import date
+from pydantic import BaseModel, ConfigDict
 
 
 class BookIn(BaseModel):
     title: str
-    author: str
-    published_date: date
+    author_id: int
+    published_year: int
     isbn: str
-    category: str
+    category_id: int
     copies_available: int
 
 
 
 class Book(BookIn):
-    id: UUID4
+    id: int
 
     model_config = ConfigDict(from_attributes=True, extra="ignore")

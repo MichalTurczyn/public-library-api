@@ -1,4 +1,4 @@
-from pydantic import UUID4, BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict
 
 class CategoryIn(BaseModel):
     name: str
@@ -6,6 +6,6 @@ class CategoryIn(BaseModel):
 
 
 class Category(CategoryIn):
-    id: UUID4
+    id: int
 
     model_config = ConfigDict(from_attributes=True, extra="ignore")

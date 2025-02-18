@@ -25,17 +25,6 @@ services:
       - backend
     container_name: app
 
-  scanner:
-    build:
-      context: metarscanner/
-    environment:
-      - API_HOST=app
-      - API_PORT=8000
-    depends_on:
-      - app
-    networks:
-      - backend
-    container_name: scanner
 
   db:
     image: postgres:17.0-alpine3.20

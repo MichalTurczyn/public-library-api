@@ -2,7 +2,6 @@
 
 from abc import ABC, abstractmethod
 from typing import Any
-from pydantic import UUID4
 from src.core.domain.book import Book, BookIn
 
 
@@ -21,18 +20,7 @@ class IBookRepository(ABC):
         """
 
     @abstractmethod
-    async def get_book_by_uuid(self, uuid: UUID4) -> Book | None:
-        """Fetches a book by its UUID.
-
-        Args:
-            uuid (UUID4): UUID of the book.
-
-        Returns:
-            Book | None: The book object if found.
-        """
-
-    @abstractmethod
-    async def list_books(self) -> list[Book]:
+    async def list_book(self) -> list[Book]:
         """Lists all books in the repository.
 
         Returns:
@@ -40,26 +28,14 @@ class IBookRepository(ABC):
         """
 
     @abstractmethod
-    async def update_book(self, uuid: UUID4, book_data: dict) -> Book | None:
-        """Updates an existing book.
+    async def get_book_by_id(self, book_id: int) -> Book | None:
+        """Fetches a book by its id.
 
         Args:
-            uuid (UUID4): UUID of the book to update.
-            book_data (dict): Fields to update.
+            id (int): id of the book.
 
         Returns:
-            Book | None: The updated book object.
-        """
-
-    @abstractmethod
-    async def delete_book(self, uuid: UUID4) -> bool:
-        """Deletes a book by UUID.
-
-        Args:
-            uuid (UUID4): UUID of the book.
-
-        Returns:
-            bool: True if the book was deleted, False otherwise.
+            Book | None: The book object if found.
         """
 
     @abstractmethod
@@ -72,28 +48,48 @@ class IBookRepository(ABC):
         Returns:
             Any: A list of books matching the title.
         """
-        pass
 
     @abstractmethod
-    async def search_book_by_author(self, author_id: UUID4) -> Any:
+    async def search_book_by_author(self, author_id: int) -> Any:
         """Searches for books by author.
 
         Args:
-            author_id (UUID4): UUID of the author.
+            author_id (int): id of the author.
 
         Returns:
             Any: A list of books written by the specified author.
         """
-        pass
 
     @abstractmethod
-    async def search_book_by_category(self, category_id: UUID4) -> Any:
+    async def search_book_by_category(self, category_id: int) -> Any:
         """Searches for books by category.
 
         Args:
-            category_id (UUID4): UUID of the category.
+            category_id (int): id of the category.
 
         Returns:
             Any: A list of books belonging to the specified category.
         """
-        pass
+
+    @abstractmethod
+    async def update_book(self, book_id: int, book_data: dict) -> Book | None:
+        """Updates an existing book.
+
+        Args:
+            id (int): id of the book to update.
+            book_data (dict): Fields to update.
+
+        Returns:
+            Book | None: The updated book object.
+        """
+
+    @abstractmethod
+    async def delete_book(self, book_id: int) -> bool:
+        """Deletes a book by id.
+
+        Args:
+            id (int): id of the book.
+
+        Returns:
+            bool: True if the book was deleted, False otherwise.
+        """

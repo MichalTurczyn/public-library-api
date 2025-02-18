@@ -1,16 +1,15 @@
-from pydantic import UUID4, BaseModel, ConfigDict
-from datetime import date
+from pydantic import BaseModel, ConfigDict
 
 
 class BookDTO(BaseModel):
     """A DTO model for book."""
 
-    id: UUID4
+    id: int
     title: str
-    author: str
-    published_date: date
+    author_id: int
+    published_year: int
     isbn: str
-    category: str
+    category_id: int
     copies_available: int
 
     model_config = ConfigDict(

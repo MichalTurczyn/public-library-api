@@ -6,7 +6,6 @@ Aplikacja przeznaczona do zarządzania zasobami biblioteki publicznej
 - zarządzanie książkami,
 - zarządzanie użytkownikami,
 - obsługa wypożyczeń i rezerwacji,
-- zarządzanie karami,
 - rekomendacje książek.
 
 ## Stos technologiczny

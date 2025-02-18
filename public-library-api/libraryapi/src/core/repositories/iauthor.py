@@ -2,7 +2,6 @@
 
 from abc import ABC, abstractmethod
 from typing import List
-from pydantic import UUID4
 from src.core.domain.author import Author, AuthorIn
 
 
@@ -19,19 +18,28 @@ class IAuthorRepository(ABC):
         Returns:
             Author: The created author object.
         """
-        pass
 
     @abstractmethod
-    async def get_by_uuid(self, author_id: UUID4) -> Author | None:
-        """Fetches an author by their UUID.
+    async def get_author_by_id(self, author_id: int) -> Author | None:
+        """Fetches an author by their id.
 
         Args:
-            author_id (UUID4): UUID of the author.
+            author_id (int): id of the author.
 
         Returns:
             Author | None: The author object if found, otherwise None.
         """
-        pass
+
+    @abstractmethod
+    async def get_books_by_author(self, author_id: int) -> List[str]:
+        """Fetches the books written by a specific author.
+
+        Args:
+            author_id (int): id of the author.
+
+        Returns:
+            List[str]: A list of book titles written by the author.
+        """
 
     @abstractmethod
     async def list_authors(self) -> List[Author]:
@@ -40,28 +48,26 @@ class IAuthorRepository(ABC):
         Returns:
             List[Author]: A list of all authors.
         """
-        pass
 
     @abstractmethod
-    async def get_books_by_author(self, author_id: UUID4) -> List[str]:
-        """Fetches the books written by a specific author.
+    async def update_author(self, author_id: int, updated_data: AuthorIn) -> Author | None:
+        """Updates an author's data.
 
         Args:
-            author_id (UUID4): UUID of the author.
+            author_id (int): id of the author to update.
+            updated_data (AuthorIn): Updated author data.
 
         Returns:
-            List[str]: A list of book titles written by the author.
+            Author | None: The updated author object if successful, otherwise None.
         """
-        pass
 
     @abstractmethod
-    async def delete_author(self, author_id: UUID4) -> bool:
-        """Deletes an author by their UUID.
+    async def delete_author(self, author_id: int) -> bool:
+        """Deletes an author by their id.
 
         Args:
-            author_id (UUID4): UUID of the author to delete.
+            author_id (int): id of the author to delete.
 
         Returns:
             bool: True if the author was successfully deleted, False otherwise.
         """
-        pass
