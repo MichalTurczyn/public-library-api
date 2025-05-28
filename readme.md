@@ -1,6 +1,6 @@
 # Public Library API
 
-Aplikacja przeznaczona do zarządzania zasobami biblioteki publicznej
+Aplikacja przeznaczona do zarządzania zasobami biblioteki publicznej. Stworzona jako projekt zaliczeniowy na przedmiot Programowanie Serwisów Internetowych.
 
 ## Lista funkcjonalności
 - zarządzanie książkami,
